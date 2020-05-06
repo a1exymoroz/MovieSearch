@@ -1,16 +1,18 @@
+import 'swiper/css/swiper.min.css';
+import 'swiper/js/swiper';
+
 import './styles.scss';
+import AppHtml from './App.html';
+import { Main } from './models/main/main';
 
-async function start() {
-  return await Promise.resolve('async is working');
+class App {
+  constructor(html) {
+    document.body.innerHTML = html;
+    this.buildApp();
+  }
+  async buildApp() {
+    const main = new Main(document.body.querySelector('main'));
+  }
 }
 
-start().then(console.log);
-
-const unused = 42;
-
-class Util {
-  static id = Date.now();
-}
-
-console.log('Util Id:', Util.id);
-console.log(unused);
+new App(AppHtml);

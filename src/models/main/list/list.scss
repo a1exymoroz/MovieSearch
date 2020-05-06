@@ -1,0 +1,34 @@
+.swiper-container {
+  width: 100%;
+  height: 500px;
+}
+
+.swiper-movie {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  a {
+    text-decoration: none;
+    color: black;
+  }
+  a,
+  img,
+  p,
+  div {
+    margin: 2px;
+  }
+  img {
+    width: 200px;
+  }
+  .rating {
+    display: flex;
+    align-items: center;
+    .star {
+      width: 15px;
+      height: 15px;
+      margin-right: 5px;
+    }
+  }
+}
