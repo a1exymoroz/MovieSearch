@@ -33,6 +33,10 @@ export class Main {
       this.searchInputValue = value.trim();
       this.reBuildMovieList();
     };
+    const infoMessages = document.createElement('div');
+    infoMessages.classList.add('info');
+    infoMessages.textContent = 'No Result';
+    this.searchNode.append(infoMessages);
   }
 
   async firstBuildMovieList() {
