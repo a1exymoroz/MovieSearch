@@ -70,19 +70,28 @@ export class Main {
   }
 
   async getMovies() {
-    const API_KEY = '5a8359a3';
-    const url = `https://www.omdbapi.com/?s=${this.searchInputValue}&page=${this.page}&apikey=${API_KEY}`;
-
-    const res = await fetch(url);
-    const data = await res.json();
-
-    for (let index = 0; index < data.Search.length; index++) {
-      const urlImdb = `https://www.omdbapi.com/?i=${data.Search[index].imdbID}&apikey=${API_KEY}`;
-      const resImdb = await fetch(urlImdb);
-      const dataImdb = await resImdb.json();
-      data.Search[index].rating = dataImdb.imdbRating;
+    const OMDB_API_KEY = '5a8359a3';
+    const TRANSLATE_API_KEY =
+      'trnsl.1.1.20170506T133756Z.d523dbf15945aee5.28e6bba8287e893a63b6e59990a007a82116e5e1';
+    let searchValue = this.searchInputValue;
+    if (/[А-Яа-я]/.test(this.searchInputValue)) {
+      const translateUrl = `https://translate.yandex.net/api/v1.5/tr.json/translate?key=${TRANSLATE_API_KEY}&text=${searchValue}&lang=ru-en`;
+      const translateRes = await fetch(translateUrl);
+      const translateData = await translateRes.json();
+      searchValue = translateData.text[0];
     }
 
-    return data;
+    const oddbapiUrl = `https://www.omdbapi.com/?s=${searchValue}&page=${this.page}&apikey=${OMDB_API_KEY}`;
+    const oddbapiRes = await fetch(oddbapiUrl);
+    const oddbapiData = await oddbapiRes.json();
+
+    for (let index = 0; index < oddbapiData.Search.length; index++) {
+      const imdbUrl = `https://www.omdbapi.com/?i=${oddbapiData.Search[index].imdbID}&apikey=${OMDB_API_KEY}`;
+      const imdbRes = await fetch(imdbUrl);
+      const imdbData = await imdbRes.json();
+      oddbapiData.Search[index].rating = imdbData.imdbRating;
+    }
+
+    return oddbapiData;
   }
 }

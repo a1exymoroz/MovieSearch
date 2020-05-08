@@ -1,7 +1,10 @@
 import 'swiper/css/swiper.min.css';
 import 'swiper/js/swiper';
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import '@fortawesome/fontawesome-free/js/all.min.js';
 
 import './styles.scss';
+
 import AppHtml from './App.html';
 import { Main } from './models/main/main';
 
@@ -10,8 +13,8 @@ class App {
     document.body.innerHTML = html;
     this.buildApp();
   }
-  async buildApp() {
-    const main = new Main(document.body.querySelector('main'));
+  buildApp() {
+    new Main(document.body.querySelector('main'));
   }
 }
 
