@@ -3,21 +3,65 @@ form {
   align-items: center;
   width: 100%;
   justify-content: center;
-  .input-wrapper {
-    position: relative;
+  input {
     margin-right: 10px;
-    input {
-      &::placeholder {
-        font-family: 'Font Awesome 5 Free';
-        font-weight: 900;
-      }
+    width: 50%;
+    &::placeholder {
+      font-family: 'Font Awesome 5 Free';
+      font-weight: 900;
     }
-    .clear {
-      position: absolute;
-      right: 1px;
-      top: 2px;
-      border: none;
-      background-color: white;
+  }
+  .search__keyboard {
+    border: none;
+    cursor: pointer;
+    color: var(--swiper-theme-color);
+    background-color: white;
+  }
+  .search__speak {
+    border: none;
+    color: var(--swiper-theme-color);
+    background-color: white;
+    width: 30px;
+    &::after {
+      font-family: 'Font Awesome 5 Free';
+      font-weight: 900;
+      content: '\f130';
     }
+    &.active::after {
+      font-family: 'Font Awesome 5 Free';
+      font-weight: 900;
+      content: '\f131';
+    }
+  }
+
+  .search__submit {
+    margin-left: 10px;
+  }
+}
+
+.wrapper__virtual-keyboard {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background-color: white;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+  .wrapper__virtual-close {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    border: none;
+  }
+}
+
+@media all and (max-width: 768px) {
+  .search__keyboard {
+    display: none;
+  }
+  .wrapper__virtual-keyboard {
+    display: none;
   }
 }
