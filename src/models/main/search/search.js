@@ -17,6 +17,7 @@ export class Search {
     this.rootNode.innerHTML = searchHtml;
 
     this.inputNode = this.rootNode.querySelector('input');
+
     this.rootNode.querySelector('form').addEventListener('submit', (event) => this.onSubmit(event));
     this.rootNode
       .querySelector('.search__keyboard')
@@ -52,6 +53,7 @@ export class Search {
   onClickKeyboard(event) {
     event.stopPropagation();
     if (this.isKeyboardOpen) return;
+    this.inputNode.setAttribute('disabled', 'true');
     this.isKeyboardOpen = true;
 
     const wrapper = document.createElement('div');
@@ -59,19 +61,39 @@ export class Search {
     const close = document.createElement('button');
     close.innerHTML = '<i class="fas fa-times"></i>';
     close.classList.add('wrapper__virtual-close');
-    close.addEventListener('click', (event) => {
-      event.stopPropagation();
-      wrapper.remove();
-      this.isKeyboardOpen = false;
-    });
+
     wrapper.append(close);
 
-    const virtualKeyboard = new VirtualKeyboard(wrapper);
+    let virtualKeyboard = new VirtualKeyboard(wrapper, this.inputNode.value);
     document.body.append(wrapper);
 
+    let isRemoveKeyBoard = false;
     virtualKeyboard.onChangeValue = (value) => {
-      this.inputNode.value = value;
+      if (!isRemoveKeyBoard) {
+        this.inputNode.value = value;
+      }
     };
+
+    virtualKeyboard.onClickEnter = () => {
+      this.searchSubmit(this.inputNode.value);
+    };
+
+    close.addEventListener('click', (event) => {
+      event.stopPropagation();
+      this.isKeyboardOpen = false;
+      this.inputNode.removeAttribute('disabled');
+
+      wrapper.remove();
+      isRemoveKeyBoard = true;
+
+      //TODO: remove listener doesn't word
+      // virtualKeyboard.removeDocumentListeners();
+      // virtualKeyboard = null;
+      // const el = wrapper;
+      // const elClone = el.cloneNode(true);
+
+      // el.parentNode.replaceChild(elClone, el);
+    });
   }
 
   onClickSpeak(event) {
@@ -79,8 +101,13 @@ export class Search {
     this.isSpeakActive = !this.isSpeakActive;
 
     event.target.classList.toggle('active');
-
-    this.isSpeakActive ? this.recognition.start() : this.recognition.stop();
+    if (this.isSpeakActive) {
+      this.recognition.start();
+      this.inputNode.setAttribute('disabled', 'true');
+    } else {
+      this.recognition.stop();
+      this.inputNode.removeAttribute('disabled');
+    }
   }
 }
 

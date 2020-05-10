@@ -6,9 +6,14 @@ form {
   input {
     margin-right: 10px;
     width: 50%;
+    border: 1px solid var(--swiper-theme-color);
+    border-radius: 8px;
+    padding: 5px;
+    color: var(--swiper-theme-color);
     &::placeholder {
       font-family: 'Font Awesome 5 Free';
       font-weight: 900;
+      color: var(--swiper-theme-color);
     }
   }
   .search__keyboard {
@@ -21,11 +26,12 @@ form {
     border: none;
     color: var(--swiper-theme-color);
     background-color: white;
-    width: 30px;
+    width: 50px;
     &::after {
       font-family: 'Font Awesome 5 Free';
       font-weight: 900;
       content: '\f130';
+      margin-left: 5px;
     }
     &.active::after {
       font-family: 'Font Awesome 5 Free';
@@ -36,6 +42,10 @@ form {
 
   .search__submit {
     margin-left: 10px;
+    padding: 5px;
+    border: 1px solid var(--swiper-theme-color);
+    border-radius: 8px;
+    color: var(--swiper-theme-color);
   }
 }
 

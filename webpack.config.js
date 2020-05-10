@@ -96,15 +96,24 @@ const plugins = () => {
   return base;
 };
 
+let glob = require('glob');
+let entry = {
+  main: ['@babel/polyfill', './index.js'],
+};
+let outputPath = __dirname + '/dist/';
+if (process.env.TESTBUILD) {
+  entry = glob.sync(__dirname + '/test/**/*.test.js');
+  outputPath = __dirname + '/test-dist/';
+}
+
 module.exports = {
   context: path.resolve(__dirname, 'src'),
   mode: 'development',
-  entry: {
-    main: ['@babel/polyfill', './index.js'],
-  },
+  entry: entry,
   output: {
     filename: filename('js'),
-    path: path.resolve(__dirname, 'dist'),
+    // path: path.resolve(__dirname, 'dist'),
+    path: outputPath,
   },
   resolve: {
     extensions: ['.js', '.json', '.png'],

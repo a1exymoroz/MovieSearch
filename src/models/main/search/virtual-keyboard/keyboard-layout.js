@@ -477,12 +477,16 @@ export const keyboardLayout = [
     },
   },
   {
-    key: 'Empty',
-    classes: ['keyboard__key'],
-  },
-  {
-    key: 'Empty',
-    classes: ['keyboard__key'],
+    key: 'Enter',
+    classes: ['keyboard__key', 'keyboard__key_two-grid-column'],
+    text: {
+      eng: 'ENTER',
+      ru: 'ENTER',
+    },
+    shift: {
+      eng: 'ENTER',
+      ru: 'ENTER',
+    },
   },
   {
     key: 'ShiftLeft',
@@ -629,41 +633,13 @@ export const keyboardLayout = [
     },
   },
   {
-    key: 'ShiftRight',
+    key: 'Empty',
     classes: ['keyboard__key'],
-    text: {
-      eng: 'Shift',
-      ru: 'Shift',
-    },
-    shift: {
-      eng: 'Shift',
-      ru: 'Shift',
-    },
   },
   {
-    key: 'ControlLeft',
+    key: 'Empty',
     classes: ['keyboard__key', 'keyboard__key_two-grid-column'],
-    text: {
-      eng: 'Ctrl',
-      ru: 'Ctrl',
-    },
-    shift: {
-      eng: 'Ctrl',
-      ru: 'Ctrl',
-    },
   },
-  //   {
-  //     key: 'MetaLeft',
-  //     classes: ['keyboard__key'],
-  //     text: {
-  //       eng: 'Win',
-  //       ru: 'Win',
-  //     },
-  //     shift: {
-  //       eng: 'Win',
-  //       ru: 'Win',
-  //     },
-  //   },
   {
     key: 'AltLeft',
     classes: ['keyboard__key'],
@@ -678,7 +654,7 @@ export const keyboardLayout = [
   },
   {
     key: 'Space',
-    classes: ['keyboard__key', 'keyboard__key_seven-grid-column'],
+    classes: ['keyboard__key', 'keyboard__key_nine-grid-column'],
     text: {
       eng: ' ',
       ru: ' ',
@@ -686,30 +662,6 @@ export const keyboardLayout = [
     shift: {
       eng: ' ',
       ru: ' ',
-    },
-  },
-  {
-    key: 'AltRight',
-    classes: ['keyboard__key'],
-    text: {
-      eng: 'Alt',
-      ru: 'Alt',
-    },
-    shift: {
-      eng: 'Alt',
-      ru: 'Alt',
-    },
-  },
-  {
-    key: 'ControlRight',
-    classes: ['keyboard__key'],
-    text: {
-      eng: 'Ctrl',
-      ru: 'Ctrl',
-    },
-    shift: {
-      eng: 'Ctrl',
-      ru: 'Ctrl',
     },
   },
   {

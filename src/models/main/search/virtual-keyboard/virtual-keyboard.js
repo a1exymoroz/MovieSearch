@@ -2,14 +2,13 @@ import './virtual-keyboard.scss';
 import { keyboardLayout } from './keyboard-layout';
 
 export class VirtualKeyboard {
-  constructor(rootNode) {
+  constructor(rootNode, value) {
     this.rootNode = rootNode;
     this.language = 'eng';
     this.capsLock = false;
     this.keysPressed = {};
-    this.value = '';
+    this.value = value;
     this.keyboardNode = null;
-    this.isInputFocus = false;
 
     const localStorageLanguage = JSON.parse(localStorage.getItem('virtual-keyboard-lang'));
     this.language = localStorageLanguage || 'eng';
@@ -18,6 +17,11 @@ export class VirtualKeyboard {
     this.initKeyBoardEvents();
 
     this.onChangeValue = () => {};
+    this.onClickEnter = () => {};
+
+    //TODO: remove listener doesn't word
+    // this.onKeydown = this.onKeydown.bind(this);
+    // this.onKeyup = this.onKeyup.bind(this);
   }
 
   initKeyBoard() {
@@ -51,7 +55,8 @@ export class VirtualKeyboard {
             text = item.text.eng;
             keyElement.textContent = text;
 
-            keyElement.addEventListener('click', () => {
+            keyElement.addEventListener('click', (event) => {
+              event.stopPropagation();
               this.value = this.value.substring(0, this.value.length - 1);
               this.onChangeValue(this.value);
             });
@@ -60,7 +65,8 @@ export class VirtualKeyboard {
 
           case 'CapsLock': {
             text = item.text.eng;
-            keyElement.addEventListener('click', () => {
+            keyElement.addEventListener('click', (event) => {
+              event.stopPropagation();
               this.toggleCapsLock();
             });
 
@@ -68,9 +74,19 @@ export class VirtualKeyboard {
           }
           case 'Space': {
             text = item.text.eng;
-            keyElement.addEventListener('click', () => {
+            keyElement.addEventListener('click', (event) => {
+              event.stopPropagation();
               this.value += text;
               this.onChangeValue(this.value);
+            });
+
+            break;
+          }
+          case 'Enter': {
+            text = item.text.eng;
+            keyElement.addEventListener('click', (event) => {
+              event.stopPropagation();
+              this.onClickEnter();
             });
 
             break;
@@ -97,6 +113,7 @@ export class VirtualKeyboard {
             text = this.capsLock ? item.shift[this.language] : item.text[this.language];
 
             keyElement.addEventListener('click', (event) => {
+              event.stopPropagation();
               if (this.hasKeyPressed(/Shift/)) {
                 this.value += !this.capsLock ? item.shift[this.language] : item.text[this.language];
               } else {
@@ -140,30 +157,39 @@ export class VirtualKeyboard {
   }
 
   initKeyBoardEvents() {
-    document.addEventListener('keydown', (event) => {
-      if (this.keysPressed[event.code]) return;
+    document.addEventListener('keydown', (event) => this.onKeydown(event));
+    document.addEventListener('keyup', (event) => this.onKeyup(event));
+  }
 
-      this.keysPressed[event.code] = this.keyboardNode.querySelector(`[data-key=${event.code}]`);
+  onKeydown(event) {
+    event.stopPropagation();
+    if (this.keysPressed[event.code]) return;
 
-      if (!this.keysPressed[event.code]) return;
+    this.keysPressed[event.code] = this.keyboardNode.querySelector(`[data-key=${event.code}]`);
 
-      this.keysPressed[event.code].classList.add('keyboard__key_active');
+    if (!this.keysPressed[event.code]) return;
 
-      if (this.isInputFocus) return;
+    this.keysPressed[event.code].classList.add('keyboard__key_active');
 
-      this.keysPressed[event.code].click();
-    });
+    this.keysPressed[event.code].click();
+  }
 
-    document.addEventListener('keyup', (event) => {
-      const node = this.keysPressed[event.code];
-      if (!node) return;
-      node.classList.remove('keyboard__key_active');
+  onKeyup(event) {
+    event.stopPropagation();
+    const node = this.keysPressed[event.code];
+    if (!node) return;
+    node.classList.remove('keyboard__key_active');
 
-      if (this.hasKeyPressed(/Shift/) && this.hasKeyPressed(/Alt/)) {
-        this.toggleLanguage();
-      }
-      delete this.keysPressed[event.code];
-    });
+    if (this.hasKeyPressed(/Shift/) && this.hasKeyPressed(/Alt/)) {
+      this.toggleLanguage();
+    }
+    delete this.keysPressed[event.code];
+  }
+
+  //TODO: remove listener doesn't word
+  removeDocumentListeners() {
+    // document.removeEventListener('keydown', this.onKeydown);
+    // document.removeEventListener('keyup', this.onKeyup);
   }
 
   toggleLanguage() {

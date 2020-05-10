@@ -55,9 +55,7 @@ export class MovieList {
     this.appendSwiperSlides(this.moviesData.Search);
 
     this.swiper.on('reachEnd', function () {
-      console.log('reachEnd');
-      if (!self.isFetchMovies) {
-        console.log('reachEnd if');
+      if (!self.isFetchMovies && self.moviesTotalResults > self.movies.length) {
         self.isFetchMovies = true;
         self.appendSpinnerSlide();
         self.getMoreMovies();

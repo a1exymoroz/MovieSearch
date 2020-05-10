@@ -7,6 +7,7 @@ export class Main {
   constructor(rootNode) {
     this.rootNode = rootNode;
     this.movieListNode = null;
+    this.infoMessagesNode = null;
 
     this.search = null;
     this.moviesList = null;
@@ -33,10 +34,10 @@ export class Main {
       this.searchInputValue = value.trim();
       this.reBuildMovieList();
     };
-    const infoMessages = document.createElement('div');
-    infoMessages.classList.add('info');
-    infoMessages.textContent = 'No Result';
-    this.searchNode.append(infoMessages);
+    this.infoMessagesNode = document.createElement('div');
+    this.infoMessagesNode.classList.add('info');
+    this.infoMessagesNode.textContent = 'No Result';
+    this.searchNode.append(this.infoMessagesNode);
   }
 
   async firstBuildMovieList() {
@@ -53,7 +54,10 @@ export class Main {
     this.movieListNode.innerHTML = Spinner;
     this.moviesData = await this.getMovies();
     this.movieListNode.innerHTML = '';
-    this.setMovieList();
+
+    if (this.moviesData) {
+      this.setMovieList();
+    }
   }
 
   setMovieList() {
@@ -74,28 +78,86 @@ export class Main {
   }
 
   async getMovies() {
-    const OMDB_API_KEY = '5a8359a3';
+    this.infoMessagesNode.innerHTML = '';
+
+    let searchValue = this.searchInputValue;
+    if (/[А-Яа-я]/.test(searchValue)) {
+      searchValue = await this.getTranslate(searchValue);
+    }
+
+    if (!searchValue) return null;
+
+    let data = await this.getOMDBMovies(searchValue);
+
+    if (!data) return null;
+
+    data = await this.setRatingMovies(data);
+
+    if (!data) return null;
+
+    return data;
+  }
+
+  getTranslate(value) {
     const TRANSLATE_API_KEY =
       'trnsl.1.1.20170506T133756Z.d523dbf15945aee5.28e6bba8287e893a63b6e59990a007a82116e5e1';
-    let searchValue = this.searchInputValue;
-    if (/[А-Яа-я]/.test(this.searchInputValue)) {
-      const translateUrl = `https://translate.yandex.net/api/v1.5/tr.json/translate?key=${TRANSLATE_API_KEY}&text=${searchValue}&lang=ru-en`;
-      const translateRes = await fetch(translateUrl);
-      const translateData = await translateRes.json();
-      searchValue = translateData.text[0];
+
+    const url = `https://translate.yandex.net/api/v1.5/tr.json/translate?key=${TRANSLATE_API_KEY}&text=${value}&lang=ru-en`;
+
+    return fetch(url)
+      .then((res) => res.json())
+      .then((data) => {
+        this.infoMessagesNode.innerHTML = `Showing results for '${value}'`;
+        return data.text[0];
+      })
+      .catch((error) => {
+        this.infoMessagesNode.innerHTML = `Error: ${error.message}`;
+        return null;
+      });
+  }
+
+  getOMDBMovies(value) {
+    const OMDB_API_KEY = '5a8359a3';
+
+    const url = `https://www.omdbapi.com/?s=${value}&page=${this.page}&apikey=${OMDB_API_KEY}`;
+
+    return fetch(url)
+      .then((res) => res.json())
+      .then((data) => {
+        let outputData = data;
+        if (data.Response === 'False') {
+          this.infoMessagesNode.innerHTML = data.Error;
+          outputData = null;
+        }
+        return outputData;
+      })
+      .catch((error) => {
+        this.infoMessagesNode.innerHTML = `Error: ${error.message}`;
+        return null;
+      });
+  }
+
+  setRatingMovies(data) {
+    const outputData = data;
+
+    for (let index = 0; index < outputData.Search.length; index++) {
+      const imdbData = this.getRatingMovies(outputData.Search[index].imdbID);
+      if (!imdbData) return null;
+      outputData.Search[index].rating = imdbData.imdbRating;
     }
 
-    const oddbapiUrl = `https://www.omdbapi.com/?s=${searchValue}&page=${this.page}&apikey=${OMDB_API_KEY}`;
-    const oddbapiRes = await fetch(oddbapiUrl);
-    const oddbapiData = await oddbapiRes.json();
+    return outputData;
+  }
 
-    for (let index = 0; index < oddbapiData.Search.length; index++) {
-      const imdbUrl = `https://www.omdbapi.com/?i=${oddbapiData.Search[index].imdbID}&apikey=${OMDB_API_KEY}`;
-      const imdbRes = await fetch(imdbUrl);
-      const imdbData = await imdbRes.json();
-      oddbapiData.Search[index].rating = imdbData.imdbRating;
-    }
+  getRatingMovies(value) {
+    const OMDB_API_KEY = '5a8359a3';
+    const url = `https://www.omdbapi.com/?i=${value}&apikey=${OMDB_API_KEY}`;
 
-    return oddbapiData;
+    return fetch(url)
+      .then((res) => res.json())
+      .catch((error) => {
+        this.infoMessagesNode.innerHTML = `Error: ${error.message}`;
+        return null;
+      });
   }
 }
